@@ -2163,6 +2163,33 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -2172,19 +2199,23 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       /* all articles */
       article: {
+        /* select article */
         name: '',
         description: '',
         stock: 1,
         id: 0
       },
-
-      /* select article */
       newArticle: true,
 
       /* true => create , false => update */
       modalStatu: 0,
       modalTitle: 'Create new article',
-      errors: []
+      errors: [],
+      pagination: {
+        page: 1,
+        per_page: 5
+      },
+      paginationArray: []
     };
   },
   mounted: function mounted() {
@@ -2204,13 +2235,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context.prev = _context.next) {
               case 0:
                 _context.next = 2;
-                return axios__WEBPACK_IMPORTED_MODULE_0___default().get('/articles');
+                return axios__WEBPACK_IMPORTED_MODULE_0___default().get('/articles', {
+                  params: _this.pagination
+                });
 
               case 2:
                 info = _context.sent;
                 _this.articles = info.data;
 
-              case 4:
+                _this.listPagination();
+
+              case 5:
               case "end":
                 return _context.stop();
             }
@@ -2357,6 +2392,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         this.article.description = info.description;
         this.article.stock = info.stock;
       }
+    },
+    listPagination: function listPagination() {
+      var num = 2;
+      var paginaArray = [];
+      var init = this.pagination.page - num;
+      if (init < 1) init = 1;
+      var end = this.pagination.page + num;
+      if (end > this.articles.last_page) end = this.articles.last_page;
+
+      for (var i = init; i <= end; i++) {
+        paginaArray.push(i);
+      }
+
+      this.paginationArray = paginaArray;
     }
   }
 });
@@ -42448,7 +42497,7 @@ var render = function () {
           _vm._v(" "),
           _c(
             "tbody",
-            _vm._l(_vm.articles, function (article) {
+            _vm._l(_vm.articles.data, function (article) {
               return _c("tr", { key: article.id }, [
                 _c("th", { attrs: { scope: "row" } }, [
                   _vm._v(_vm._s(article.id)),
@@ -42500,6 +42549,205 @@ var render = function () {
             }),
             0
           ),
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "row" }, [
+          _c("div", { staticClass: "col" }, [
+            _vm._v(
+              "\n                    " +
+                _vm._s(_vm.articles.from) +
+                " a " +
+                _vm._s(_vm.articles.to) +
+                " de " +
+                _vm._s(_vm.articles.total) +
+                "\n                "
+            ),
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col" }, [
+            _c(
+              "select",
+              {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.pagination.per_page,
+                    expression: "pagination.per_page",
+                  },
+                ],
+                on: {
+                  change: [
+                    function ($event) {
+                      var $$selectedVal = Array.prototype.filter
+                        .call($event.target.options, function (o) {
+                          return o.selected
+                        })
+                        .map(function (o) {
+                          var val = "_value" in o ? o._value : o.value
+                          return val
+                        })
+                      _vm.$set(
+                        _vm.pagination,
+                        "per_page",
+                        $event.target.multiple
+                          ? $$selectedVal
+                          : $$selectedVal[0]
+                      )
+                    },
+                    function ($event) {
+                      return _vm.getArticles()
+                    },
+                  ],
+                },
+              },
+              [
+                _c("option", { attrs: { value: "5" } }, [_vm._v("5")]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "10" } }, [_vm._v("10")]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "15" } }, [_vm._v("15")]),
+              ]
+            ),
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col" }, [
+            _c("nav", { attrs: { "aria-label": "..." } }, [
+              _c(
+                "ul",
+                { staticClass: "pagination" },
+                [
+                  _c(
+                    "li",
+                    {
+                      staticClass: "page-item",
+                      class: { disabled: _vm.pagination.page == 1 },
+                    },
+                    [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "page-link",
+                          attrs: { href: "#" },
+                          on: {
+                            click: function ($event) {
+                              _vm.pagination.page = 1
+                              _vm.getArticles()
+                            },
+                          },
+                        },
+                        [_vm._v("Previous")]
+                      ),
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "li",
+                    {
+                      staticClass: "page-item",
+                      class: { disabled: _vm.pagination.page == 1 },
+                    },
+                    [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "page-link",
+                          attrs: { href: "#" },
+                          on: {
+                            click: function ($event) {
+                              _vm.pagination.page--
+                              _vm.getArticles()
+                            },
+                          },
+                        },
+                        [_vm._v("-")]
+                      ),
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _vm._l(_vm.paginationArray, function (n) {
+                    return _c(
+                      "li",
+                      {
+                        key: n,
+                        staticClass: "page-item",
+                        class: { active: _vm.pagination.page == n },
+                      },
+                      [
+                        _c(
+                          "a",
+                          {
+                            staticClass: "page-link",
+                            attrs: { href: "#" },
+                            on: {
+                              click: function ($event) {
+                                _vm.pagination.page = n
+                                _vm.getArticles()
+                              },
+                            },
+                          },
+                          [_vm._v(_vm._s(n))]
+                        ),
+                      ]
+                    )
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "li",
+                    {
+                      staticClass: "page-item",
+                      class: {
+                        disabled: _vm.pagination.page == _vm.articles.last_page,
+                      },
+                    },
+                    [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "page-link",
+                          attrs: { href: "#" },
+                          on: {
+                            click: function ($event) {
+                              _vm.pagination.page++
+                              _vm.getArticles()
+                            },
+                          },
+                        },
+                        [_vm._v("+")]
+                      ),
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "li",
+                    {
+                      staticClass: "page-item",
+                      class: {
+                        disabled: _vm.pagination.page == _vm.articles.last_page,
+                      },
+                    },
+                    [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "page-link",
+                          attrs: { href: "#" },
+                          on: {
+                            click: function ($event) {
+                              _vm.pagination.page = _vm.articles.last_page
+                              _vm.getArticles()
+                            },
+                          },
+                        },
+                        [_vm._v("Next")]
+                      ),
+                    ]
+                  ),
+                ],
+                2
+              ),
+            ]),
+          ]),
         ]),
       ]),
     ]),

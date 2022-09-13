@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Http\Requests\ArticleRequest;
+use Illuminate\Http\Request;
 
 class ArticleController extends Controller
 { 
-    public function index()
+    public function index(Request $request)
     {
-        return Article::get();
+        return Article::paginate($request->per_page);
     }
  
     public function store(ArticleRequest $request)/* crear new article */

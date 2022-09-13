@@ -17,7 +17,7 @@
                         </tr>
                     </thead>
                     <tbody> 
-                        <tr v-for="article in articles" :key="article.id">
+                        <tr v-for="article in articles.data" :key="article.id">
                             <th scope="row">{{article.id}}</th>
                             <td>{{article.name}}</td>
                             <td>{{article.description}}</td>
@@ -34,9 +34,36 @@
                         
                     </tbody>
                 </table>
+                <div class="row">
+                    <div class="col">
+                        {{articles.from}} a {{articles.to}} de {{articles.total}}
+                    </div>
+                    <div class="col">
+                        <select v-model="pagination.per_page" @change="getArticles()">
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <nav aria-label="...">
+                            <ul class="pagination">
+                                <li class="page-item" :class="{disabled:pagination.page==1}"> 
+                                    <a class="page-link" href="#" @click="pagination.page=1; getArticles();">Previous</a>
+                                </li>
+                                <li class="page-item" :class="{disabled:pagination.page==1}"><a class="page-link" href="#" @click="pagination.page--; getArticles();">-</a></li>
+                                <li class="page-item"  v-for="n in paginationArray" :key="n" :class="{active:pagination.page==n}"><a class="page-link" href="#" @click="pagination.page=n; getArticles();">{{n}}</a></li>
+                                <li class="page-item" :class="{disabled:pagination.page==articles.last_page}"><a class="page-link" href="#" @click="pagination.page++; getArticles();">+</a></li>
+                                <li class="page-item" :class="{disabled:pagination.page==articles.last_page}">
+                                    <a class="page-link" href="#" @click="pagination.page=articles.last_page; getArticles();">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
             </div>
         </div> 
-            <!-- Modal -->
+        <!-- Modal -->
         <div class="modal" :class="{mostrar: modalStatu}">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -92,16 +119,21 @@
         data(){
             return {
                 articles : [],/* all articles */
-                article : {
+                article : { /* select article */
                     name : '',
                     description : '',
                     stock : 1,
                     id : 0,
-                }, /* select article */
+                }, 
                 newArticle : true,    /* true => create , false => update */         
                 modalStatu : 0,
                 modalTitle : 'Create new article',
                 errors : [],
+                pagination : {
+                    page : 1,
+                    per_page : 5,
+                },
+                paginationArray : [],
             }
         },
         mounted() {
@@ -112,8 +144,9 @@
         }, 
         methods : {
             async getArticles(){
-                const info = await axios.get('/articles');
+                const info = await axios.get('/articles',{params: this.pagination});
                 this.articles = info.data; 
+                this.listPagination(); 
             },
             
             async deleteArticle(id_article){
@@ -183,6 +216,22 @@
                     this.article.stock = info.stock;
                 }
             },
+
+            listPagination(){
+                const num = 2;
+                let paginaArray = [];
+
+                let init = this.pagination.page - num;
+                if (init<1) init = 1;
+
+                let end = this.pagination.page + num;
+                if(end > this.articles.last_page) end = this.articles.last_page
+
+                for (let i = init; i <= end; i++) paginaArray.push(i);
+
+                this.paginationArray = paginaArray;
+
+            }
             
         }
 
